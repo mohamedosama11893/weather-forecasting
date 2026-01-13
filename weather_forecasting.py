@@ -4,6 +4,24 @@ import requests
 import json
 import gzip
 
+API_KEY = "fe9da8f5d9d066db32878cc17cdedee6"  # ضع الـ API Key بتاعك هنا
+BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+
+# Loading cities from JSON file in a compressed format using gzip
+filename = "city.list.json.gz"  # أو "city.list.json"
+try:
+    if filename.endswith(".gz"):
+     with gzip.open(filename, "rt", encoding="utf-8") as file:
+        cities = json.load(file)
+    else:
+     with open(filename, "r", encoding="utf-8") as file:
+        cities = json.load(file)
+except Exception as error:
+    print(f"Error loading city list: {error}")
+    exit()
+    
+# قائمة فيها (المدينة + كود الدولة)
+city_names = [f"{city['name']}, {city['country']}" for city in cities]
 
 
 
