@@ -20,13 +20,36 @@ except Exception as error:
     print(f"Error loading city list: {error}")
     exit()
     
-# قائمة فيها (المدينة + كود الدولة)
+# a list of (city name + country code)
 city_names = [f"{city['name']}, {city['country']}" for city in cities]
 
+# ----------- Helper Methods -----------
 
 
 
+def search_city(event):
+    """البحث في قائمة المدن عند كتابة 3 حروف أو أكثر"""
+    query = entry.get().strip().lower()
+    listbox.delete(0, tk.END)
 
+    if len(query) >= 3:
+        matches = [name for name in city_names if name.lower().startswith(query)]
+        for name in matches:
+            listbox.insert(tk.END, name)
+
+
+def select_city(event):
+    """Starting the search for the weather of a city from Single Click"""
+    selection = listbox.curselection()
+    if selection:
+        city = listbox.get(selection[0])
+        get_weather(city)
+
+def select_all(event):
+    """to select all the text in the box by pressing Ctrl + A"""
+    entry.select_range(0, tk.END)
+    entry.icursor(tk.END)
+    return 'break'  # to prevent the default behavior
 
 # ----------- GUI -----------
 
