@@ -25,7 +25,53 @@ city_names = [f"{city['name']}, {city['country']}" for city in cities]
 
 # ----------- Helper Methods -----------
 
+def get_weather(city_entry):
+    """to get the weather data for a specific city"""
+    try:
+        # Separating the city name from the city code to use it in the search 
+        city_name, country_code = city_entry.split(", ")
+        params = {"q": f"{city_name},{country_code}", "appid": API_KEY, "units": "metric"}
+        response = requests.get(BASE_URL, params=params)
 
+        if response.status_code == 200:
+            data = response.json()
+
+            # Extracting the information   
+            city = data.get("name", "N/A")
+            lat = data["coord"]["lat"]
+            lon = data["coord"]["lon"]
+            description = data["weather"][0]["description"]
+            temp = data["main"]["temp"]
+            humidity = data["main"]["humidity"]
+            pressure = data["main"]["pressure"]
+            wind_speed = round(data["wind"]["speed"] * 3.6 , 2)  # تحويل من m/s إلى km/h
+
+            # Calculating the probability of the rain
+            rain_mm = data.get("rain", {}).get("1h", 0.0)
+            rain_chance = min(int((rain_mm / 7) * 100), 100)
+
+            output = (
+                f"🌍 City: {city}, {country_code}\n"
+                f"\n📍 Lat: {lat}, Lon: {lon}\n"
+                f"\n🌤 Weather: {description}\n"
+                f"\n🌞 Temp: {temp}°C\n"
+                f"\n💧 Humidity: {humidity}%\n"
+                f"\n💨 Wind: {wind_speed} km/h\n"
+                f"\n🌡 Pressure: {pressure} hPa\n"
+                f"\n☔Rain Probability: {rain_chance}%\n"
+            )
+            result_label.config(text=output, fg="black")
+            
+
+        elif response.status_code == 404:
+            result_label.config(text="❌ City not found", fg="red")
+        elif response.status_code == 401:
+            result_label.config(text="❌ Wrong API Key", fg="red")
+        else:
+            result_label.config(text=f"⚠️ Unexpected Error: {response.status_code}", fg="orange")
+
+    except requests.exceptions.RequestException as e:
+        result_label.config(text=f"⚠️ Connection Problem: {e}", fg="orange")
 
 def search_city(event):
     """البحث في قائمة المدن عند كتابة 3 حروف أو أكثر"""
