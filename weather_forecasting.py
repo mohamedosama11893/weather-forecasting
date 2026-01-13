@@ -3,3 +3,53 @@ import tkinter as tk
 import requests
 import json
 import gzip
+
+
+
+
+
+
+
+# ----------- GUI -----------
+
+window = tk.Tk()
+window.title("Weather Forecasting")
+
+# -------- Frame 1 (label + entry) --------
+frame_1 = tk.Frame(window)
+frame_1.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+
+label = tk.Label(frame_1, text="Search : ", font=("Arial", 12))
+label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+entry = tk.Entry(frame_1, font=("Arial", 12))
+entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+entry.focus_set()
+entry.bind("<KeyRelease>", search_city)
+entry.bind("<Control-a>", select_all)  
+entry.bind("<Control-A>", select_all)
+
+# -------- Frame 2 (listbox + scrollbar) --------
+frame_2 = tk.Frame(window)
+frame_2.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+
+listbox = tk.Listbox(frame_2, width=30, height=10, font=("Arial", 12))
+listbox.grid(row=1, column=0, sticky="nsew")
+
+scrollbar = tk.Scrollbar(frame_2, orient="vertical", command=listbox.yview)
+scrollbar.grid(row=1, column=1, sticky="ns")
+
+
+listbox.config(yscrollcommand=scrollbar.set)
+#listbox.bind("<ButtonRelease-1>", select_city)
+#listbox.bind("<Return>", select_city)
+listbox.bind("<<ListboxSelect>>", select_city)
+
+
+# -------- Result label --------
+result_label = tk.Label(window, text="Choose a city to know the weather",
+                        justify="center", anchor="center" , fg="blue", font=("Arial", 12))
+result_label.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
+
+# -------- Main loop --------
+window.mainloop()
